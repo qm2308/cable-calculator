@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="红腾电气电缆计算器 - 专业电缆计算工具">
+    <meta name="keywords" content="电缆计算,电气工程,红腾电气">
+    <meta name="theme-color" content="#0f2027">
+    
+    <!-- PWA支持 -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+    
+    <!-- iOS Safari优化 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="电缆计算器">
+    
+    <!-- Android Chrome优化 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="styles/main.css" as="style">
+    <link rel="preload" href="scripts/app.js" as="script">
+    
+    <title>红腾电气电缆计算器</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">
+                    <i class="icon-calculator"></i>
+                    红腾电气电缆计算器
+                </h1>
+                <p class="app-subtitle">专业电缆计算工具 - 含超大截面电缆数据与选型建议</p>
+            </div>
+        </header>
+        
+        <nav class="app-nav">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="calculator">
+                    <i class="icon-calculator"></i>
+                    <span>计算器</span>
+                </button>
+                <button class="nav-tab" data-tab="manual">
+                    <i class="icon-book"></i>
+                    <span>说明书</span>
+                </button>
+                <button class="nav-tab" data-tab="selection">
+                    <i class="icon-cable"></i>
+                    <span>选型建议</span>
+                </button>
+                <button class="nav-tab" data-tab="capacity">
+                    <i class="icon-table"></i>
+                    <span>载流量表</span>
+                </button>
+            </div>
+        </nav>
+        
+        <main class="app-main">
+            <!-- 计算器内容 -->
+            <div class="tab-content active" id="calculator-tab">
+                <div class="calculator-container">
+                    <div class="input-section">
+                        <h2 class="section-title">输入参数</h2>
+                        <form class="calculator-form" id="calculatorForm">
+                            <div class="form-group">
+                                <label for="power">电源功率</label>
+                                <div class="input-unit">
+                                    <input type="number" id="power" placeholder="例如: 100" min="1" required>
+                                    <span class="unit">kW</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="voltage">输入电压</label>
+                                <select id="voltage">
+                                    <option value="380">380V</option>
+                                    <option value="400">400V</option>
+                                    <option value="415">415V</option>
+                                    <option value="440">440V</option>
+                                    <option value="690">690V</option>
+                                    <option value="custom">自定义</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="customVoltageGroup" style="display: none;">
+                                <label for="customVoltage">自定义电压</label>
+                                <div class="input-unit">
+                                    <input type="number" id="customVoltage" placeholder="输入电压值">
+                                    <span class="unit">V</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="frequency">电源频率</label>
+                                <select id="frequency">
+                                    <option value="50">50Hz</option>
+                                    <option value="60">60Hz</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="length">电缆长度</label>
+                                <div class="input-unit">
+                                    <input type="number" id="length" placeholder="例如: 50" min="1" required>
+                                    <span class="unit">米</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="installation">安装方式</label>
+                                <select id="installation">
+                                    <option value="1">架空敷设</option>
+                                    <option value="2">管道敷设</option>
+                                    <option value="3">直埋敷设</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ambientTemp">环境温度</label>
+                                <div class="input-unit">
+                                    <input type="number" id="ambientTemp" value="30" min="0" max="60">
+                                    <span class="unit">°C</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="voltageDrop">允许电压降</label>
+                                <div class="input-unit">
+                                    <input type="number" id="voltageDrop" value="5" min="1" max="10" step="0.5">
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-calculate" id="calculateBtn">
+                                <i class="icon-calculator"></i>
+                                计算电缆规格
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h2 class="section-title">计算结果</h2>
+                        
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="icon-current"></i>
+                                    计算电流
+                                </div>
+                                <div class="result-value" id="currentResult">-- A</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="icon-voltage"></i>
+                                    基于电压降的电缆截面积
+                                </div>
+                                <div class="result-value" id="cableSizeResult">-- mm²</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="icon-capacity"></i>
+                                    基于载流量的电缆截面积
+                                </div>
+                                <div class="result-value" id="capacityCableSize">-- mm²</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="icon-recommend"></i>
+                                    推荐电缆截面积
+                                </div>
+                                <div class="result-value highlight" id="finalCableSize">-- mm²</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="icon-drop"></i>
+                                    实际电压降
+                                </div>
+                                <div class="result-value" id="voltageDropResult">-- %</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="icon-cable-type"></i>
+                                    推荐电缆型号
+                                </div>
+                                <div class="result-value" id="cableTypeResult">--</div>
+                            </div>
+                        </div>
+                        
+                        <div class="cable-selection">
+                            <h3>选择电缆截面积</h3>
+                            <div class="cable-selector" id="cableSelector">
+                                <!-- 电缆尺寸选项将通过JavaScript生成 -->
+                            </div>
+                        </div>
+                        
+                        <div class="selected-cable-info">
+                            <div class="info-item">
+                                <span class="info-label">选定电缆的电压降:</span>
+                                <span class="info-value" id="selectedCableDrop">-- %</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">载流量:</span>
+                                <span class="info-value" id="selectedCableCapacity">-- A</span>
+                            </div>
+                        </div>
+                        
+                        <div class="recommendation">
+                            <h3><i class="icon-advice"></i> 安装建议</h3>
+                            <p id="installationAdvice">请输入参数并点击计算获取建议</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 说明书内容 -->
+            <div class="tab-content" id="manual-tab">
+                <div class="content-container">
+                    <h2>产品使用说明书</h2>
+                    <div class="manual-content" id="manualContent">
+                        <!-- 内容将在JavaScript中加载 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 电缆选型建议内容 -->
+            <div class="tab-content" id="selection-tab">
+                <div class="content-container">
+                    <h2>电缆选型专业建议</h2>
+                    <div class="selection-content" id="selectionContent">
+                        <!-- 内容将在JavaScript中加载 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 电缆载流量表内容 -->
+            <div class="tab-content" id="capacity-tab">
+                <div class="content-container">
+                    <h2>电缆载流量参考表</h2>
+                    <div class="capacity-content" id="capacityContent">
+                        <!-- 内容将在JavaScript中加载 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="app-footer">
+            <p>红腾电气电缆计算器 &copy; 2025 | 专业电缆工具</p>
+        </footer>
+    </div>
+    
+    <!-- 加载中提示 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>计算中...</p>
+        </div>
+    </div>
+    
+    <script src="scripts/app.js"></script>
+</body>
+</html>

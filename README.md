@@ -1,484 +1,272 @@
-# Cordova打包方案 - 跨平台移动应用
+# 红腾电气电缆计算器 - PWA移动应用
 
-## 方案概述
+## 项目简介
 
-使用Apache Cordova将HTML应用打包为真正的原生移动应用，支持Android和iOS平台，同时兼容鸿蒙系统的WebView内核。
+这是一个专业的电缆计算器Progressive Web App (PWA)，专为电气工程师和技术人员设计，用于计算中频熔炼设备电源输入电缆的合适规格。应用完美兼容鸿蒙系统及其他主流移动操作系统。
 
-## 技术优势
+## 功能特点
 
-- 📱 **跨平台**: 一套代码支持Android、iOS、鸿蒙等多个平台
-- 🔧 **原生插件**: 可调用设备原生API和功能
-- 🛠️ **工具链成熟**: 丰富的插件生态和开发工具
-- 📦 **应用商店**: 支持发布到各大应用商店
+### 🔧 核心功能
+- **智能电缆计算**: 基于功率、电压、长度等多参数计算
+- **载流量分析**: 考虑环境温度和安装方式的校正
+- **电压降计算**: 精确计算实际电压降百分比
+- **电缆选型建议**: 专业推荐适合的电缆型号和规格
 
-## 环境准备
+### 📱 移动端优化
+- **响应式设计**: 完美适配手机、平板等设备
+- **触摸友好**: 针对触屏设备优化的界面交互
+- **离线使用**: 支持离线计算，无需网络连接
+- **快速安装**: PWA技术，一键安装到桌面
 
-### 1. 安装Node.js和npm
-```bash
-# 检查Node.js版本
-node --version
-npm --version
+### 🚀 鸿蒙系统兼容
+- **原生支持**: 鸿蒙系统原生支持PWA应用
+- **分布式能力**: 支持鸿蒙多设备协同功能
+- **性能优化**: 针对鸿蒙Web引擎优化
+- **安全可靠**: 遵循鸿蒙应用安全规范
 
-# 安装最新版本（如果需要）
-npm install -g n
-sudo n stable
+## 技术架构
+
+### 前端技术栈
+- **HTML5**: 语义化标记和现代Web API
+- **CSS3**: 响应式设计和动画效果
+- **JavaScript ES6+**: 模块化编程和异步处理
+- **PWA**: Service Worker和Web App Manifest
+
+### 核心算法
+- **电流计算**: I = P / (√3 × U × cosφ)
+- **电压降计算**: ΔU = (√3 × I × L × ρ × 100) / (S × U)
+- **载流量校正**: 考虑温度系数和安装方式系数
+
+## 文件结构
+
+```
+cable_calculator_app/
+├── index.html              # 主页面
+├── manifest.json           # PWA应用清单
+├── sw.js                   # Service Worker
+├── styles/
+│   └── main.css           # 主样式文件
+├── scripts/
+│   └── app.js             # 主应用逻辑
+├── icons/                 # 应用图标
+│   ├── icon-72.png
+│   ├── icon-96.png
+│   ├── icon-128.png
+│   ├── icon-144.png
+│   ├── icon-152.png
+│   ├── icon-192.png
+│   ├── icon-384.png
+│   ├── icon-512.png
+│   └── icon-only.svg      # SVG源文件
+└── README.md              # 项目文档
 ```
 
-### 2. 安装Cordova CLI
-```bash
-npm install -g cordova
-cordova --version
-```
+## 安装部署
 
-### 3. 安装平台SDK
-```bash
-# Android SDK (推荐使用Android Studio)
-# iOS SDK (需要Xcode，macOS系统)
-# 鸿蒙SDK (从华为开发者平台下载)
-```
+### 方式一：本地部署（推荐）
 
-## 项目创建
+1. **下载项目文件**
+   ```bash
+   # 假设项目已下载到本地目录
+   cd cable_calculator_app
+   ```
 
-### 1. 初始化Cordova项目
-```bash
-# 创建新项目
-cordova create cable-calculator com.hongteng.cablecalculator "红腾电气电缆计算器"
+2. **启动本地服务器**
+   ```bash
+   # 使用Python启动
+   python -m http.server 8000
+   
+   # 或使用Node.js
+   npx serve .
+   
+   # 或使用PHP
+   php -S localhost:8000
+   ```
 
-cd cable-calculator
+3. **访问应用**
+   - 打开浏览器访问: `http://localhost:8000`
+   - 在手机浏览器中访问相同的地址
 
-# 添加平台支持
-cordova platform add android
-cordova platform add ios
-cordova platform add harmonyos  # 如果支持的话
+4. **安装到桌面**
+   - 浏览器会自动提示安装PWA
+   - 点击"安装"或"添加到主屏幕"
+   - 即可像原生应用一样使用
 
-# 查看已安装的平台
-cordova platform list
-```
+### 方式二：云端部署
 
-### 2. 项目结构
-```
-cable-calculator/
-├── config.xml                 # Cordova配置文件
-├── hooks/                     # 自定义钩子脚本
-├── platforms/                 # 各平台构建文件
-├── plugins/                   # 插件目录
-├── www/                       # Web资源目录
-│   ├── index.html            # 主页面
-│   ├── css/                  # 样式文件
-│   ├── js/                   # JavaScript文件
-│   └── icons/                # 应用图标
-└── resources/                 # 应用资源
-```
+1. **上传到Web服务器**
+   - 将所有文件上传到Web服务器根目录
+   - 确保服务器支持HTTPS（PWA要求）
 
-### 3. 复制Web应用代码
-```bash
-# 将PWA应用的HTML、CSS、JS文件复制到www目录
-cp -r ../cable_calculator_app/* www/
+2. **配置HTTPS**
+   - 申请SSL证书
+   - 配置HTTPS访问
 
-# 确保所有资源路径正确
-```
+3. **测试访问**
+   - 通过域名访问应用
+   - 测试PWA安装功能
 
-## 配置优化
+## 使用说明
 
-### config.xml - 应用配置
+### 基本操作
 
-```xml
-<?xml version='1.0' encoding='utf-8'?>
-<widget id="com.hongteng.cablecalculator" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>红腾电气电缆计算器</name>
-    <description>专业电缆计算工具</description>
-    <author email="developer@hongteng.com" href="https://hongteng.com">红腾电气</author>
+1. **输入参数**
+   - 电源功率 (kW)
+   - 输入电压 (V)
+   - 电缆长度 (米)
+   - 环境温度 (°C)
+   - 安装方式
 
-    <!-- 内容安全策略 -->
-    <content-security-policy>
-        <access-origin="*" />
-        <allow-navigation href="*" />
-        <allow-intent href="http://*/*" />
-        <allow-intent href="https://*/*" />
-        <allow-intent href="tel:*" />
-        <allow-intent href="sms:*" />
-        <allow-intent href="mailto:*" />
-        <allow-intent href="geo:*" />
-    </content-security-policy>
+2. **查看结果**
+   - 计算电流
+   - 推荐电缆截面积
+   - 实际电压降
+   - 电缆型号建议
 
-    <!-- 平台配置 -->
-    <platform name="android">
-        <allow-intent href="market:*" />
-        <icon density="ldpi" src="resources/android/icon.png" />
-        <icon density="mdpi" src="resources/android/icon.png" />
-        <icon density="hdpi" src="resources/android/icon.png" />
-        <icon density="xhdpi" src="resources/android/icon.png" />
-        <icon density="xxhdpi" src="resources/android/icon.png" />
-        <icon density="xxxhdpi" src="resources/android/icon.png" />
-        
-        <!-- Android特定配置 -->
-        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
-            <application android:theme="@style/AppTheme" />
-        </edit-config>
-    </platform>
+3. **选择电缆**
+   - 从标准规格中选择
+   - 查看载流量信息
+   - 获取安装建议
 
-    <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-        <icon height="57" platform="ios" src="resources/ios/icon.png" width="57" />
-        <icon height="114" platform="ios" src="resources/ios/icon.png" width="114" />
-        <icon height="40" platform="ios" src="resources/ios/icon.png" width="40" />
-        <icon height="80" platform="ios" src="resources/ios/icon.png" width="80" />
-        <icon height="120" platform="ios" src="resources/ios/icon.png" width="120" />
-        <icon height="180" platform="ios" src="resources/ios/icon.png" width="180" />
-    </platform>
+### 专业功能
 
-    <!-- 插件配置 -->
-    <plugin name="cordova-plugin-whitelist" spec="1" />
-    <plugin name="cordova-plugin-network-information" spec="3" />
-    <plugin name="cordova-plugin-device" spec="2" />
-    <plugin name="cordova-plugin-statusbar" spec="3" />
-    <plugin name="cordova-plugin-splashscreen" spec="6" />
-    
-    <!-- 自定义插件示例 -->
-    <plugin name="cordova-plugin-custom-share" spec="1.0.0">
-        <variable name="SHARE_TITLE" value="红腾电气电缆计算器" />
-    </plugin>
+#### 电缆载流量表
+- 支持1.5mm²到1000mm²规格
+- 包含温度校正系数
+- 安装方式校正
 
-    <!-- 全局配置 -->
-    <access origin="*" />
-    <allow-intent href="*" />
-    <platform name="browser">
-        <allow-intent href="http://*/*" />
-        <allow-intent href="https://*/*" />
-        <allow-intent href="tel:*" />
-        <allow-intent href="sms:*" />
-        <allow-intent href="mailto:*" />
-        <allow-intent href="geo:*" />
-    </platform>
-</widget>
-```
+#### 选型建议
+- 氟塑料电缆推荐
+- 硅橡胶电缆选项
+- 工业标准对比
 
-### 优化www/index.html
+## 兼容性说明
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <title>红腾电气电缆计算器</title>
+### 操作系统支持
+- ✅ **鸿蒙系统**: 原生PWA支持
+- ✅ **Android**: Chrome 40+, Samsung Internet
+- ✅ **iOS**: Safari 11.1+
+- ✅ **Windows**: Edge 17+
+- ✅ **macOS**: Safari 11.1+
 
-    <!-- Cordova -->
-    <script type="text/javascript" src="cordova.js"></script>
-    
-    <!-- 应用样式 -->
-    <link rel="stylesheet" type="text/css" href="css/index.css">
-    
-    <!-- 应用脚本 -->
-    <script type="text/javascript" src="js/app.js"></script>
-</head>
+### 浏览器支持
+- Chrome 40+
+- Firefox 44+
+- Safari 11.1+
+- Edge 17+
+- Samsung Internet 8.0+
 
-<body>
-    <div class="app">
-        <!-- 原有的HTML内容 -->
-        <header class="app-header">
-            <h1>红腾电气电缆计算器</h1>
-        </header>
-        
-        <!-- 主要内容 -->
-        <main class="app-main">
-            <!-- 这里是原来的计算器界面 -->
-        </main>
-    </div>
+### 设备适配
+- 手机屏幕: 320px - 768px
+- 平板屏幕: 768px - 1024px
+- 桌面屏幕: 1024px+
 
-    <script type="text/javascript">
-        app.initialize();
+## 开发者文档
 
-        // 设备就绪事件
-        document.addEventListener('deviceready', function() {
-            console.log('Cordova设备就绪');
-            
-            // 设置状态栏样式
-            if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
-                StatusBar.overlaysWebView(false);
-                StatusBar.styleLightContent();
-                StatusBar.backgroundColorByHexString("#0f2027");
-            }
-            
-            // 初始化应用功能
-            app.onDeviceReady();
-        }, false);
-    </script>
-</body>
-</html>
-```
+### 本地开发
 
-### 优化JavaScript (js/index.js)
+1. **环境要求**
+   - Node.js 16+
+   - 现代浏览器
+   - HTTPS环境（PWA开发）
+
+2. **开发调试**
+   ```bash
+   # 启动开发服务器
+   npx serve . --ssl
+   
+   # 在Chrome中打开
+   # 启用开发者工具进行调试
+   ```
+
+3. **测试PWA功能**
+   - 访问 `chrome://flags` 启用相关功能
+   - 使用Lighthouse进行PWA审计
+   - 测试Service Worker缓存
+
+### 自定义开发
+
+#### 修改计算逻辑
+编辑 `scripts/app.js` 中的 `CableCalculatorApp` 类:
 
 ```javascript
-var app = {
-    // 应用初始化
-    initialize: function() {
-        this.bindEvents();
-    },
-    
-    // 绑定事件
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.addEventListener('resume', this.onResume, false);
-        document.addEventListener('pause', this.onPause, false);
-    },
-    
-    // 设备就绪
-    onDeviceReady: function() {
-        console.log('设备就绪');
-        
-        // 隐藏启动画面
-        if (navigator.splashscreen) {
-            navigator.splashscreen.hide();
-        }
-        
-        // 启用网络监控
-        this.setupNetworkListener();
-        
-        // 设置分享功能
-        this.setupShareFunction();
-    },
-    
-    // 应用恢复
-    onResume: function() {
-        console.log('应用恢复');
-    },
-    
-    // 应用暂停
-    onPause: function() {
-        console.log('应用暂停');
-    },
-    
-    // 设置网络监听
-    setupNetworkListener: function() {
-        if (navigator.connection) {
-            function checkConnection() {
-                var connection = navigator.connection.type;
-                var states = {};
-                states[Connection.UNKNOWN]  = 'Unknown connection';
-                states[Connection.ETHERNET] = 'Ethernet connection';
-                states[Connection.WIFI]     = 'WiFi connection';
-                states[Connection.CELL_2G]  = 'Cell 2G connection';
-                states[Connection.CELL_3G]  = 'Cell 3G connection';
-                states[Connection.CELL_4G]  = 'Cell 4G connection';
-                states[Connection.CELL]     = 'Cell generic connection';
-                states[Connection.NONE]     = 'No network connection';
-                
-                console.log('网络状态:', states[connection]);
-            }
-            
-            checkConnection();
-            document.addEventListener("connection", checkConnection, false);
-        }
-    },
-    
-    // 设置分享功能
-    setupShareFunction: function() {
-        // 将分享功能绑定到全局
-        window.shareResult = function(content) {
-            if (navigator.share) {
-                navigator.share({
-                    title: '电缆计算结果',
-                    text: content,
-                    url: window.location.href
-                }).then(() => console.log('分享成功'))
-                  .catch((error) => console.log('分享失败', error));
-            } else {
-                // 使用cordova-plugin-custom-share
-                window.plugins.socialsharing.share(
-                    content,
-                    '电缆计算结果',
-                    null,
-                    null
-                );
-            }
-        };
-    }
-};
-```
-
-## 插件开发
-
-### 自定义分享插件 (plugins/cordova-plugin-custom-share/www/share.js)
-
-```javascript
-exports.share = function(success, fail, args) {
-    var content = args[0];
-    var title = args[1];
-    var image = args[2];
-    var url = args[3];
-    
-    // 根据平台实现分享逻辑
-    cordova.exec(success, fail, "CustomShare", "share", [content, title, image, url]);
-};
-```
-
-### Android原生实现 (plugins/cordova-plugin-custom-share/src/android/CustomShare.java)
-
-```java
-package com.hongteng.cablecalculator;
-
-import android.content.Intent;
-import android.content.Context;
-import android.widget.Toast;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaWebView;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import android.content.Intent;
-
-public class CustomShare extends CordovaPlugin {
-    @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("share")) {
-            String content = args.getString(0);
-            String title = args.getString(1);
-            this.shareContent(content, title, callbackContext);
-            return true;
-        }
-        return false;
-    }
-    
-    private void shareContent(String content, String title, CallbackContext callbackContext) {
-        if (content != null && content.length() > 0) {
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, content);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, title);
-            sendIntent.setType("text/plain");
-            
-            Intent shareIntent = Intent.createChooser(sendIntent, "分享到");
-            cordova.getActivity().startActivity(shareIntent);
-            
-            callbackContext.success("分享成功");
-        } else {
-            callbackContext.error("分享内容不能为空");
-        }
-    }
+// 修改计算公式
+calculateCableSpecs() {
+    // 自定义计算逻辑
 }
 ```
 
-## 构建和发布
+#### 调整样式
+编辑 `styles/main.css`:
 
-### 1. 添加图标和启动画面
-
-```bash
-# 安装图标插件
-cordova plugin add cordova-plugin-splashscreen
-
-# 生成不同尺寸的图标
-# 可以使用在线工具或插件自动生成
-```
-
-### 2. 调试构建
-
-```bash
-# 添加调试模式
-cordova build android --debug
-cordova build ios --debug
-
-# 运行在模拟器上
-cordova emulate android
-cordova emulate ios
-```
-
-### 3. 发布构建
-
-```bash
-# Android发布版
-cordova build android --release -- --keystore=/path/to/keystore --storepassword=password --alias=alias_name
-
-# iOS发布版
-cordova build ios --release
-```
-
-### 4. 签名配置
-
-创建 `build.json` 配置文件：
-
-```json
-{
-    "android": {
-        "release": {
-            "keystore": "/path/to/release.keystore",
-            "storePassword": "your_store_password",
-            "alias": "your_alias_name",
-            "password": "your_alias_password",
-            "keystoreType": "pkcs12"
-        }
-    },
-    "ios": {
-        "release": {
-            "codeSignIdentity": "iPhone Distribution",
-            "provisioningProfile": "your_provisioning_profile_uuid",
-            "developmentTeam": "your_development_team_id"
-        }
-    }
+```css
+/* 修改主题颜色 */
+:root {
+    --primary-color: #your-color;
+    --highlight-color: #your-highlight;
 }
 ```
 
-## 性能优化
+#### 添加功能
+在 `scripts/app.js` 中添加新的方法:
 
-### 1. 代码优化
-- 压缩CSS和JavaScript文件
-- 优化图片资源
-- 使用图标字体代替图片
-
-### 2. 缓存策略
-```xml
-<!-- 在config.xml中配置 -->
-<preference name="SplashMaintainAspectRatio" value="true" />
-<preference name="FadeSplashScreenDuration" value="300" />
-<preference name="SplashShowOnlyFirstTime" value="false" />
+```javascript
+// 新功能方法
+newFeature() {
+    // 功能实现
+}
 ```
 
-### 3. 网络优化
-- 实现离线缓存
-- 预加载关键资源
-- 使用CDN加速
+## 故障排除
 
-## 鸿蒙系统适配
+### 常见问题
 
-### 1. 鸿蒙特定配置
-```xml
-<!-- 在config.xml中添加鸿蒙平台 -->
-<platform name="harmonyos">
-    <allow-intent href="market:*" />
-    <icon density="ldpi" src="resources/harmonyos/icon.png" />
-    <!-- 更多鸿蒙特定配置 -->
-</platform>
-```
+**Q: PWA无法安装？**
+A: 确保使用HTTPS协议访问，且浏览器支持PWA功能。
 
-### 2. 测试兼容性
-- 在鸿蒙设备上测试所有功能
-- 检查WebView兼容性
-- 验证原生插件功能
+**Q: 离线功能不工作？**
+A: 检查Service Worker是否正确注册，清除浏览器缓存后重试。
 
-## 部署到应用商店
+**Q: 计算结果不准确？**
+A: 检查输入参数是否正确，确保符合实际工程条件。
 
-### 1. 华为应用市场 (HarmonyOS)
-- 注册华为开发者账号
-- 上传应用包
-- 填写应用信息
-- 提交审核
+**Q: 在鸿蒙手机上无法使用？**
+A: 确保使用鸿蒙系统内置浏览器或支持PWA的第三方浏览器。
 
-### 2. Google Play (Android)
-- 注册Google Play开发者账号
-- 上传AAB/APK文件
-- 配置商店信息
-- 提交审核
+### 技术支持
 
-### 3. Apple App Store (iOS)
-- 注册Apple开发者账号
-- 通过Xcode上传应用
-- 填写App Store信息
-- 提交审核
+如遇到技术问题，请：
+1. 检查浏览器控制台错误信息
+2. 确认网络连接正常
+3. 尝试清除浏览器缓存
+4. 重新安装PWA应用
 
-这种方案适合需要发布到多个应用商店，并且需要原生功能的商业应用场景。
+## 版本更新
+
+### v1.0.0 (2025-11-24)
+- ✨ 初始版本发布
+- ✅ 基础电缆计算功能
+- ✅ 移动端适配
+- ✅ PWA支持
+- ✅ 鸿蒙系统兼容
+
+### 计划功能
+- 📊 计算结果导出
+- 📱 推送通知
+- 🌙 暗色模式
+- 🔄 数据同步
+- 📈 计算历史
+
+## 许可证
+
+本项目基于 MIT 许可证开源，详见 LICENSE 文件。
+
+## 联系我们
+
+- **开发者**: MiniMax Agent
+- **项目地址**: [GitHub Repository]
+- **技术支持**: [Support Email]
+
+---
+
+**红腾电气电缆计算器** - 让电缆选型更简单、更专业！
